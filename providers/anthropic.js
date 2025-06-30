@@ -41,14 +41,24 @@ class AnthropicProvider extends AIProvider {
                 headers: {
                     'x-api-key': this.apiKey,
                     'Content-Type': 'application/json',
-                    'anthropic-version': '2023-06-01'
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
                 },
                 body: JSON.stringify(requestBody)
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(`HTTP ${response.status}: ${errorData.error?.message || response.statusText}`);
+                const errorText = await response.text();
+                let errorMessage;
+                
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.error?.message || errorData.message || response.statusText;
+                } catch {
+                    errorMessage = errorText || response.statusText;
+                }
+                
+                throw new Error(`HTTP ${response.status}: ${errorMessage}`);
             }
 
             const data = await response.json();
@@ -64,17 +74,22 @@ class AnthropicProvider extends AIProvider {
             };
 
         } catch (error) {
+            // Handle specific error types
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Не удалось подключиться к Anthropic API. Проверьте интернет-соединение или попробуйте позже.');
+            }
+            
             throw new Error(this.handleApiError(error));
         }
     }
 
     async testConnection() {
         try {
-            const testMessages = [{ role: 'user', content: 'Hello' }];
-            const result = await this.sendMessage(testMessages, 'You are a helpful assistant.');
-            return { success: true, message: 'Подключение к Anthropic успешно!' };
+            const testMessages = [{ role: 'user', content: 'Hi' }];
+            const result = await this.sendMessage(testMessages, 'You are a helpful assistant. Respond briefly.');
+            return { success: true, message: 'Подключение к Anthropic Claude успешно!' };
         } catch (error) {
-            return { success: false, message: this.handleApiError(error) };
+            return { success: false, message: error.message };
         }
     }
 
@@ -101,6 +116,33 @@ class AnthropicProvider extends AIProvider {
 ВАЖНО: Адаптируйся под любой язык, который использует пользователь в своих ответах. Отвечай на том же языке, что и пользователь, даже если он отличается от изначально выбранного языка интерфейса.
 
 СТИЛЬ ОТВЕТА: Будь творческим и глубоким в анализе. Claude отлично понимает нюансы иронии и сарказма.`;
+    }
+
+    // Enhanced error handling for Anthropic
+    handleApiError(error) {
+        console.error(`${this.name} API Error:`, error);
+        
+        if (error.message?.includes('401') || error.message?.includes('unauthorized')) {
+            return 'Неверный API ключ Anthropic. Проверьте правильность ключа.';
+        }
+        
+        if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+            return 'Превышен лимит запросов Anthropic. Попробуйте позже.';
+        }
+        
+        if (error.message?.includes('400')) {
+            return 'Неверный формат запроса к Anthropic API.';
+        }
+        
+        if (error.message?.includes('insufficient_quota') || error.message?.includes('credit')) {
+            return 'Недостаточно средств на балансе Anthropic API.';
+        }
+
+        if (error.message?.includes('fetch')) {
+            return 'Ошибка подключения к Anthropic. Проверьте интернет-соединение.';
+        }
+        
+        return `Ошибка Anthropic: ${error.message || 'Неизвестная ошибка'}`;
     }
 }
 

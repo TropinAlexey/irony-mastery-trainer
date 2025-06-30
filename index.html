@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irony Mastery Trainer - Развивайте остроумие и иронию</title>
+    <meta name="description" content="Интерактивный AI-тренер для развития иронии, остроумия и элегантного общения на нескольких языках">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎭 Irony Mastery Trainer</h1>
+            <p class="subtitle">Развивайте остроумие, иронию и элегантное общение</p>
+        </header>
+
+        <!-- Language Selection -->
+        <section id="language-section" class="section">
+            <h2>🌍 Выберите язык / Choose Language</h2>
+            <div class="language-buttons">
+                <button class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
+                <button class="lang-btn" data-lang="en">🇺🇸 English</button>
+                <button class="lang-btn" data-lang="uk">🇺🇦 Українська</button>
+            </div>
+        </section>
+
+        <!-- AI Provider Selection -->
+        <section id="provider-section" class="section" style="display: none;">
+            <h2>🤖 Выберите AI провайдера</h2>
+            <div class="provider-buttons">
+                <button class="provider-btn" data-provider="openai">🚀 OpenAI (GPT)</button>
+                <button class="provider-btn" data-provider="anthropic">🧠 Anthropic (Claude)</button>
+                <button class="provider-btn" data-provider="google">🌟 Google (Gemini)</button>
+                <button class="provider-btn" data-provider="ollama">🏠 Ollama (Local)</button>
+            </div>
+        </section>
+
+        <!-- API Key Input -->
+        <section id="api-section" class="section" style="display: none;">
+            <h2>🔑 API ключ</h2>
+            <div class="api-input-container">
+                <input type="password" id="api-key" placeholder="Введите ваш API ключ" class="api-input">
+                <button id="save-api-btn" class="api-btn">💾 Сохранить</button>
+            </div>
+            <p class="api-note">Ключ сохраняется только в вашем браузере и не передается третьим лицам</p>
+        </section>
+
+        <!-- Level Selection -->
+        <section id="level-section" class="section" style="display: none;">
+            <h2>📊 Выберите уровень сложности</h2>
+            <div class="level-buttons">
+                <button class="level-btn" data-level="beginner">
+                    <div class="level-icon">🌱</div>
+                    <div class="level-title">Начинающий</div>
+                    <div class="level-desc">Основы иронии и юмора</div>
+                </button>
+                <button class="level-btn" data-level="intermediate">
+                    <div class="level-icon">🌿</div>
+                    <div class="level-title">Средний</div>
+                    <div class="level-desc">Развитие остроумия</div>
+                </button>
+                <button class="level-btn" data-level="advanced">
+                    <div class="level-icon">🌳</div>
+                    <div class="level-title">Продвинутый</div>
+                    <div class="level-desc">Мастерство элегантной иронии</div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Chat Interface -->
+        <section id="chat-section" class="section" style="display: none;">
+            <div class="chat-header">
+                <h2>💬 Тренировочная сессия</h2>
+                <div class="session-controls">
+                    <button id="new-session-btn" class="control-btn">🔄 Новая сессия</button>
+                    <button id="save-progress-btn" class="control-btn">💾 Сохранить прогресс</button>
+                </div>
+            </div>
+            
+            <div id="chat-messages" class="chat-messages">
+                <!-- Messages will be added here -->
+            </div>
+            
+            <div class="chat-input-container">
+                <textarea id="user-input" placeholder="Введите ваш ответ..." rows="3"></textarea>
+                <button id="send-btn" class="send-btn">📤 Отправить</button>
+            </div>
+        </section>
+
+        <!-- Analysis Section -->
+        <section id="analysis-section" class="section" style="display: none;">
+            <h2>📈 Анализ сессии</h2>
+            <div id="analysis-content">
+                <!-- Analysis content will be added here -->
+            </div>
+            <div class="analysis-actions">
+                <button id="export-btn" class="action-btn">📄 Экспорт результатов</button>
+                <button id="schedule-btn" class="action-btn">📅 Запланировать следующую сессию</button>
+                <button id="restart-btn" class="action-btn">🔄 Начать заново</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with ❤️ for developing wit and elegant communication</p>
+            <div class="footer-links">
+                <a href="https://github.com/TropinAlexey/irony-mastery-trainer" target="_blank">📖 GitHub</a>
+                <a href="#" onclick="showAbout()">ℹ️ О проекте</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="hideAbout()">&times;</span>
+            <h2>🎭 О проекте Irony Mastery Trainer</h2>
+            <p>Интерактивный AI-тренер для развития навыков иронии, остроумия и элегантного общения.</p>
+            <h3>🌟 Возможности:</h3>
+            <ul>
+                <li>Персонализированные упражнения</li>
+                <li>Анализ ваших ответов</li>
+                <li>Поддержка нескольких языков</li>
+                <li>Отслеживание прогресса</li>
+                <li>Планирование сессий</li>
+            </ul>
+            <p><strong>Версия:</strong> 1.0.0</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -51,3 +51,158 @@
     font-family: 'Courier New', monospace;
     font-size: 0.9rem;
 }
+
+/* Language Prompt Modal Styles */
+.language-prompt-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+}
+
+.language-prompt-content {
+    background: var(--bg-secondary);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    max-width: 600px;
+    width: 90%;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: modalSlideIn 0.4s ease;
+}
+
+.language-prompt-content h2 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.language-prompt-content p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.language-input-container {
+    margin: 2rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.language-input {
+    flex: 1;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.language-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.language-set-btn {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.language-set-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+}
+
+.language-quick-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.quick-lang-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.quick-lang-btn:hover {
+    border-color: var(--accent-primary);
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive design for language modal */
+@media (max-width: 768px) {
+    .language-prompt-content {
+        padding: 2rem;
+        width: 95%;
+    }
+    
+    .language-input-container {
+        flex-direction: column;
+    }
+    
+    .language-set-btn {
+        width: 100%;
+    }
+    
+    .language-quick-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .language-prompt-content {
+        padding: 1.5rem;
+    }
+    
+    .language-prompt-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .language-quick-buttons {
+        grid-template-columns: 1fr;
+    }
+}

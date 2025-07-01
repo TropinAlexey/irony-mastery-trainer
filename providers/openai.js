@@ -5,11 +5,11 @@ class OpenAIProvider extends AIProvider {
         this.name = 'OpenAI';
         this.baseUrl = 'https://api.openai.com/v1';
         this.models = [
-            { id: 'gpt-4', name: 'GPT-4' },
-            { id: 'gpt-4-turbo-preview', name: 'GPT-4 Turbo' },
+            { id: 'gpt-4o', name: 'GPT-4o (Latest)' },
+            { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
             { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' }
         ];
-        this.selectedModel = 'gpt-4';
+        this.selectedModel = 'gpt-4o-mini'; // Используем более доступную модель по умолчанию
     }
 
     validateApiKey(apiKey) {
@@ -44,8 +44,17 @@ class OpenAIProvider extends AIProvider {
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(`HTTP ${response.status}: ${errorData.error?.message || response.statusText}`);
+                const errorText = await response.text();
+                let errorMessage;
+                
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.error?.message || errorData.message || response.statusText;
+                } catch {
+                    errorMessage = errorText || response.statusText;
+                }
+                
+                throw new Error(`HTTP ${response.status}: ${errorMessage}`);
             }
 
             const data = await response.json();
@@ -61,17 +70,22 @@ class OpenAIProvider extends AIProvider {
             };
 
         } catch (error) {
+            // Handle specific error types
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Не удалось подключиться к OpenAI API. Проверьте интернет-соединение.');
+            }
+            
             throw new Error(this.handleApiError(error));
         }
     }
 
     async testConnection() {
         try {
-            const testMessages = [{ role: 'user', content: 'Hello' }];
-            const result = await this.sendMessage(testMessages, 'You are a helpful assistant.');
+            const testMessages = [{ role: 'user', content: 'Hi' }];
+            const result = await this.sendMessage(testMessages, 'You are a helpful assistant. Respond briefly.');
             return { success: true, message: 'Подключение к OpenAI успешно!' };
         } catch (error) {
-            return { success: false, message: this.handleApiError(error) };
+            return { success: false, message: error.message };
         }
     }
 
@@ -96,6 +110,37 @@ class OpenAIProvider extends AIProvider {
         return `${basePrompt}
 
 СТИЛЬ ОТВЕТА: Будь точным и структурированным. Используй эмодзи для визуального разделения разделов.`;
+    }
+
+    // Enhanced error handling for OpenAI
+    handleApiError(error) {
+        console.error(`${this.name} API Error:`, error);
+        
+        if (error.message?.includes('401') || error.message?.includes('unauthorized')) {
+            return 'Неверный API ключ OpenAI. Проверьте правильность ключа.';
+        }
+        
+        if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+            return 'Превышен лимит запросов OpenAI. Попробуйте позже.';
+        }
+        
+        if (error.message?.includes('400')) {
+            return 'Неверный формат запроса к OpenAI API.';
+        }
+        
+        if (error.message?.includes('insufficient_quota') || error.message?.includes('quota')) {
+            return 'Недостаточно средств на балансе OpenAI API. Пополните баланс.';
+        }
+
+        if (error.message?.includes('does not exist')) {
+            return 'Модель недоступна. Проверьте доступ к GPT-4 или используйте GPT-3.5.';
+        }
+
+        if (error.message?.includes('fetch')) {
+            return 'Ошибка подключения к OpenAI. Проверьте интернет-соединение.';
+        }
+        
+        return `Ошибка OpenAI: ${error.message || 'Неизвестная ошибка'}`;
     }
 }
 
